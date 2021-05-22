@@ -47,5 +47,5 @@ Up to you to check, verify, enforce, fix any technical or security problems.
 
 ## Licence
 
-This project is under the AGPLv3.
+This project is under the [AGPLv3](./LICENSE).
 For more information, please a message or an issue on github.
