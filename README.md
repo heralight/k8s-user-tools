@@ -45,7 +45,7 @@ The code is provide as is without any garanties or support.
 
 Up to you to check, verify, enforce, fix any technical or security problems.
 
-WARNING: REMEMBER, if you use ServiceAccount as User, and create a kubeconfig for it, you will create a lifetime certificat!
+WARNING: REMEMBER, if you use ServiceAccount as User, and create a kubeconfig for it, you will create a lifetime token!
 
 ## Alternatives
 
