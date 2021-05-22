@@ -11,6 +11,8 @@ In a second step, apply some permissions to this ServiceAccount.
 
 script was inspired from https://gist.github.com/xtavras/98c6a2625079a78054a907219c976e2b and https://gist.github.com/innovia/fbba8259042f71db98ea8d4ad19bd708 and adjusted with "apply_rbac" function and colorized output.
 
+The main difference come from the seperation between ServiceAccount creation and permissions.
+
 ## Create a user service-account for a namespace
 
 ```sh
@@ -39,8 +41,11 @@ kubectl  --kubeconfig=./tmp/kube/k8s-xxxxx.yaml get ns
 
 ## Garanties
 
-The code is provide as is without any garanties or support. 
-Up to you to check, verify, enforce, fix any security problems.
+The code is provide as is without any garanties or support.
+
+Up to you to check, verify, enforce, fix any technical or security problems.
 
 ## Licence
 
+This project is under the AGPLv3.
+For more information, please a message or an issue on github.

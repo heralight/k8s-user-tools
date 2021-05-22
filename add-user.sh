@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# script was taken from https://gist.github.com/innovia/fbba8259042f71db98ea8d4ad19bd708 and adjusted with "apply_rbac" function and colorized output 
+# script come from from https://gist.github.com/innovia/fbba8259042f71db98ea8d4ad19bd708 and adjusted with "apply_rbac" function and colorized output 
 
 
 set -e
