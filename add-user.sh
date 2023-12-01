@@ -32,13 +32,32 @@ create_target_folder() {
 
 create_service_account() {
     echo -e "\\nCreating a service account in ${NAMESPACE} namespace: ${SERVICE_ACCOUNT_NAME}"
-    kubectl create sa "${SERVICE_ACCOUNT_NAME}" --namespace "${NAMESPACE}"
+    kubectl create sa "${SERVICE_ACCOUNT_NAME}" --namespace "${NAMESPACE}" --dry-run -o yaml | kubectl apply -f -
 }
-
 get_secret_name_from_service_account() {
     echo -e "\\nGetting secret of service account ${SERVICE_ACCOUNT_NAME} on ${NAMESPACE}"
-    SECRET_NAME=$(kubectl get sa "${SERVICE_ACCOUNT_NAME}" --namespace="${NAMESPACE}" -o json | jq -r .secrets[].name)
+    SECRET_NAME=$(kubectl get sa "${SERVICE_ACCOUNT_NAME}" --namespace="${NAMESPACE}" -o json | jq -r '. | select(.secrets != null) | .secrets[].name')
+    if [[ -z $SECRET_NAME ]]; then 
+        echo -e "\\nThere is no secret associated with the ${SERVICE_ACCOUNT_NAME} on ${NAMESPACE}"
+        echo -e "\\nIt is possible that your server version is greater than 1.24"
+        echo -e "\\nCreating the Service token secret for the user"
+        create_service_account_secret
+    fi
     echo "Secret name: ${SECRET_NAME}"
+}
+create_service_account_secret(){
+    # Use yq
+    # SECRET_FILE="secret.yaml"
+    # yq e -i ".metadata.name |= \"k8s-${SERVICE_ACCOUNT_NAME}-sa\"" secret_template.yaml
+    # yq e -i ".metadata.namespace |= \"${NAMESPACE}\"" secret_template.yaml
+    # yq e -i '.metadata.annotations."kubernetes.io/service-account.name" = "'${SERVICE_ACCOUNT_NAME}'"' secret_template.yaml
+    # kubectl apply -f secret_template.yaml
+
+    # Use jq 
+    jq '.metadata.annotations."kubernetes.io/service-account.name" = "'${SERVICE_ACCOUNT_NAME}'" | .metadata.name |= "'k8s-${SERVICE_ACCOUNT_NAME}-sa'" | .metadata.namespace |= "'${NAMESPACE}'"' secret_template.json > ./tmp/kube/k8s-${SERVICE_ACCOUNT_NAME}-sa.json
+    kubectl apply -f ./tmp/kube/k8s-${SERVICE_ACCOUNT_NAME}-sa.json
+    SECRET_NAME="k8s-${SERVICE_ACCOUNT_NAME}-sa"
+    
 }
 
 extract_ca_crt_from_secret() {
@@ -48,6 +67,8 @@ extract_ca_crt_from_secret() {
     printf "done"
 }
 
+# Since k8 1.24 the token is not being created with the creation of the service account. 
+# Creating an explicit secret 
 get_user_token_from_secret() {
     echo -e -n "\\nGetting user token from secret..."
     USER_TOKEN=$(kubectl get secret --namespace "${NAMESPACE}" "${SECRET_NAME}" -o json | jq -r '.data["token"]' | base64 --decode)
